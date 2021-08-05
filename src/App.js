@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import logo from './logo.svg';
+import './App.css';
+import { useEffect, useState } from 'react';
 
 import firebase from "firebase/app"
 import "firebase/database"
@@ -40,23 +42,35 @@ function App() {
     if (!db) return
 
     const dbRef = db.ref()
-    dbRef.child("test").get().then((snapshot: any) => {
+    dbRef.child("test").get().then((snapshot) => {
       if (snapshot.exists()) {
-        console.log('get data success', snapshot.val())
+        console.log('get data success', snapshot.val());
       } else {
-        console.log("No data available")
+        console.log("No data available");
       }
-    }).catch((error: Error) => {
-      console.error(error)
-    })
+    }).catch((error) => {
+      console.error(error);
+    });
   })
   
   return (
     <div className="App">
-      <input type="text" name="username" value={ username } onChange={ handleInputChange } />
-      <button onClick={ createUser }>Create</button>
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
