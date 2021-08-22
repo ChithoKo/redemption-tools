@@ -5,6 +5,14 @@ import "firebase/database"
 
 function App() {
   const [db, setDb] = useState<any>(null)
+  const [username, setUsername] = useState<string>("")
+
+  const handleInputChange = (event: any) => {
+    setUsername(event.target.value)
+  }
+  const createUser = () => {
+    console.log('create new user', username)
+  }
 
   useEffect(() => {
     const config = {
@@ -40,7 +48,8 @@ function App() {
   
   return (
     <div className="App">
-      Hello world
+      <input type="text" name="username" value={ username } onChange={ handleInputChange } />
+      <button onClick={ createUser }>Create</button>
     </div>
   )
 }
