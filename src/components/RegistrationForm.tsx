@@ -1,18 +1,13 @@
-import { useEffect, useState, ChangeEventHandler, ChangeEvent } from "react";
+import { useState, ChangeEventHandler, ChangeEvent } from "react";
 import { db as firebaseDB } from "../services/firebase-client";
+import { sha256 } from "js-sha256";
 
-interface User {
-  username: string;
-  redemptionType: string;
-  createDate: Date;
-}
-
-export const RegistrationForm = () => {
+export const RegistrationForm = ({ onRegistrationDone = (() => {}) }) => {
+  
   const [username, setUsername] = useState("");
   const [redemptionType, setRedemptionType] = useState("");
-  const [users, setUsers] = useState<User[]>([]);
 
-  const propsSetter: { [key: string]: ChangeEventHandler<HTMLInputElement> } = {
+  const InputChangeHandlers: { [key: string]: ChangeEventHandler<HTMLInputElement> } = {
     username: (e: ChangeEvent<HTMLInputElement>) => {
       setUsername(e.target.value);
     },
@@ -21,33 +16,32 @@ export const RegistrationForm = () => {
     },
   };
   const createInputChangeHandler = ( name: string ): ChangeEventHandler<HTMLInputElement> => {
-    const handleInputChange =
-      propsSetter[name] || ((event: ChangeEvent<HTMLInputElement>) => {});
+    const handleInputChange = InputChangeHandlers[name] || ((event: ChangeEvent<HTMLInputElement>) => {});
 
     return handleInputChange;
   };
   const createUser = async () => {
     const createDate = new Date();
+    const redemptionString = `${username}_${redemptionType}-${createDate}`;
+    const redemptionCode = sha256(redemptionString)
 
-    await firebaseDB.append("users", {
-      username,
-      redemptionType,
-      createDate,
-    });
+    try {
+      await firebaseDB.append("users", {
+        username,
+        redemptionType,
+        redemptionCode,
+        createDate,
+      });
 
-    fetchUsers();
+      onRegistrationDone();
+    } catch (e) {
+      console.error(e)
+    }
   };
-  const fetchUsers = async () => {
-    const users = await firebaseDB.list("users");
-    setUsers(users);
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   return (
     <form>
+      <h2>Registration Form</h2>
       <input
         type="text"
         name="username"
@@ -61,13 +55,6 @@ export const RegistrationForm = () => {
         onChange={createInputChangeHandler("redemptionType")}
       />
       <button onClick={createUser}>Create</button>
-      <ul>
-        {users.map((user: User, idx: number) => (
-          <li key={idx}>
-            {user.username} - {user.redemptionType}
-          </li>
-        ))}
-      </ul>
     </form>
   );
 };
