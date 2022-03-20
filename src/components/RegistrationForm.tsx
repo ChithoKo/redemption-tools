@@ -20,7 +20,7 @@ export const RegistrationForm = ({ onRegistrationDone = (() => {}) }) => {
 
     return handleInputChange;
   };
-  const createUser = async () => {
+  const registerUser = async () => {
     const createDate = new Date();
     const redemptionString = `${username}_${redemptionType}-${createDate}`;
     const redemptionCode = sha256(redemptionString)
@@ -54,7 +54,7 @@ export const RegistrationForm = ({ onRegistrationDone = (() => {}) }) => {
         value={redemptionType}
         onChange={createInputChangeHandler("redemptionType")}
       />
-      <button onClick={createUser}>Create</button>
+      <button onClick={registerUser}>Create</button>
     </form>
   );
 };
